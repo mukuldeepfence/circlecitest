@@ -13,8 +13,8 @@ jobs:
       - run:
           name: Setup common environment variables
           command: |
-            echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${CIRCLE_SHA1}"' >> $BASH_ENV
+            echo 'export ECR_REPOSITORY_NAME=deepfence_agent' >> $BASH_ENV
+            echo 'export FULL_IMAGE_NAME="122565780891.dkr.ecr.us-east-2.amazonaws.com/deepfence_agent:latest"' >> $BASH_ENV
       - run:
           name: Build image
           command: |
@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Run Deepfence Vulnerability Mapper
           command: |
-            docker run -it --rm --net=host -v /var/run/docker.sock:/var/run/docker.sock deepfenceio/deepfence_package_scanner_ce:1.3.0 -mgmt-console-url=$DEEPFENCE_CONSOLE_IP -deepfence-key="$DEEPFENCE_KEY" -vulnerability-scan=true -output=table -mode=local -source="$FULL_IMAGE_NAME" -fail-on-count=$FAIL_CVE_COUNT -fail-on-score=$FAIL_CVE_SCORE
+            docker run -it --rm --net=host -v /var/run/docker.sock:/var/run/docker.sock deepfenceio/deepfence_package_scanner_ce:1.3.0 -mgmt-console-url=137.184.52.247 -deepfence-key=b1888a5c-fc1a-4162-ba8c-f229fc9a27d3 -vulnerability-scan=true -output=table -mode=local -source="$FULL_IMAGE_NAME" -fail-on-count=300 -fail-on-score=8
       - run:
           name: Test image
           command: |
@@ -72,8 +72,8 @@ jobs:
           name: Push image
           command: |
             . venv/bin/activate
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
+            eval $(aws ecr get-login --region us-east-2 --no-include-email)
+            docker push 122565780891.dkr.ecr.us-east-2.amazonaws.com/deepfence_agent:latest
 workflows:
   version: 2
   build-deploy:
